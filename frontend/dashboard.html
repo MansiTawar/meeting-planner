@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Welcome to Your Dashboard</h2>
+  <p id="welcomeMessage"></p>
+
+  <button id="logoutBtn">Logout</button>
+
+  <h3>Your Expenses</h3>
+  <div id="expensesContainer">
+    <p>Loading your expenses...</p>
+  </div>
+
+  <script>
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    alert('You are not logged in.');
+    window.location.href = 'login.html';
+  }
+
+  document.getElementById('welcomeMessage').textContent = `Logged in as User ID: ${userId}`;
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('userId');
+    window.location.href = 'login.html';
+  });
+
+  fetch(`http://localhost:3000/api/expenses?userId=${userId}`)
+  .then(async res => {
+    const text = await res.text();
+    console.log('⬅️ Raw response text:', text);
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      console.error("JSON parse failed:", err);
+      throw new Error("Invalid JSON response");
+    }
+
+
+    const expenses = Array.isArray(data) ? data : data.expenses || data.data;
+
+    if (!Array.isArray(expenses)) {
+      throw new Error(`Expected response to be an array, got: ${typeof expenses}`);
+    }
+
+    const container = document.getElementById('expensesContainer');
+    container.innerHTML = '';
+
+    if (expenses.length === 0) {
+      container.textContent = 'No expenses found.';
+    } else {
+      expenses.forEach(expense => {
+        const div = document.createElement('div');
+        div.textContent = `Category: ${expense.category}, Amount: ₹${expense.amount}, Date: ${expense.date}`;
+        container.appendChild(div);
+      });
+    }
+  })
+  .catch(err => {
+    console.error("Error fetching expenses:", err);
+    document.getElementById('expensesContainer').textContent = 'Failed to load expenses.';
+  });
+
+</script>
+
+</body>
+</html>
