@@ -1,72 +1,58 @@
-// Filename: src/components/TasksPage.js
-// --- This is the complete, updated code with UI fixes and status sorting ---
+// Filename: src/pages/TasksPage.js
+// --- This version has the updated text-only hover effect ---
 
 import React, { useState, useMemo } from 'react';
-import { LuPlus, LuArrowUpDown } from "react-icons/lu"; // Added LuChevronDown
+import { LuPlus, LuArrowUpDown, LuChevronDown } from "react-icons/lu";
 import CreateTaskModal from '../components/task/CreateTaskModal';
+import TaskDetailsModal from '../components/task/TaskDetailsModal';
+import ActionMenu from '../components/task/ActionMenu';
+import StatusBadge from '../components/task/StatusBadge';
 
 const initialTasks = [
-    { id: 1, title: 'Draft initial project proposal', assignedTo: 'Alice Johnson', deadline: '2025-08-15', status: 'Completed' },
-    { id: 2, title: 'Set up frontend development environment', assignedTo: 'You (John Doe)', deadline: '2025-08-18', status: 'In Progress' },
-    { id: 3, title: 'Design database schema for tasks', assignedTo: 'Bob Williams', deadline: '2025-08-20', status: 'Pending' },
-    { id: 4, title: 'Create user authentication endpoints', assignedTo: 'Charlie Brown', deadline: '2025-08-22', status: 'Pending' },
-    { id: 5, title: 'Develop UI for the main dashboard', assignedTo: 'You (John Doe)', deadline: '2025-08-25', status: 'In Progress' },
+    { id: 1, title: 'Draft initial project proposal', assignedTo: 'Alice Johnson', department: 'Marketing', deadline: '2025-08-15', status: 'Completed', description: 'Initial draft for the Q3 project. Focus on key metrics and target audience.' },
+    { id: 2, title: 'Set up frontend development environment', assignedTo: 'You (John Doe)', department: 'Engineering', deadline: '2025-08-18', status: 'In Progress', description: 'Install Node, React, and Tailwind. Ensure all team members have access to the repository.' },
+    { id: 3, title: 'Design database schema for tasks', assignedTo: 'Bob Williams', department: 'Engineering', deadline: '2025-08-20', status: 'Pending', description: 'Plan the tables for users, tasks, meetings, and attachments. Define relationships.' },
+    { id: 4, title: 'Review Q2 performance report', assignedTo: 'Alice Johnson', department: 'Marketing', deadline: '2025-08-22', status: 'Pending', description: 'Analyze the performance metrics from the last quarter.' },
 ];
 
-const StatusBadge = ({ status }) => {
-    const statusClasses = {
-        'Completed': 'bg-green-100 text-green-800',
-        'In Progress': 'bg-yellow-100 text-yellow-800',
-        'Pending': 'bg-red-100 text-red-800',
-    };
-    return <span className={`px-2 py-1 rounded-full text-xs font-semibold ${statusClasses[status] || 'bg-gray-100 text-gray-800'}`}>{status}</span>;
-};
-
 const TasksPage = () => {
-    const [showModal, setShowModal] = useState(false);
     const [tasks, setTasks] = useState(initialTasks);
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+    const [editingTask, setEditingTask] = useState(null);
+    const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
+    const [viewingTask, setViewingTask] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [sortConfig, setSortConfig] = useState({ key: 'deadline', direction: 'ascending' });
     const [statusFilter, setStatusFilter] = useState('All');
     const [sortIndicator, setSortIndicator] = useState('');
 
-    const handleAddTask = (newTask) => {
-        setTasks([newTask, ...tasks]);
-    };
+    const handleAddTask = (newTaskData) => { setTasks([{ id: Date.now(), ...newTaskData }, ...tasks]); };
+    const handleUpdateTask = (updatedTask) => { setTasks(tasks.map(task => task.id === updatedTask.id ? updatedTask : task)); };
+    const handleDeleteTask = (taskId) => { if (window.confirm('Are you sure you want to delete this task?')) { setTasks(tasks.filter(task => task.id !== taskId)); } };
+
+    const handleOpenCreateModal = () => { setEditingTask(null); setIsEditModalVisible(true); };
+    const handleOpenEditModal = (task) => { setEditingTask(task); setIsEditModalVisible(true); };
+    const handleOpenDetailsModal = (task) => { setViewingTask(task); setIsDetailsModalVisible(true); };
+
+    const handleCloseAllModals = () => { setIsEditModalVisible(false); setIsDetailsModalVisible(false); setEditingTask(null); setViewingTask(null); };
 
     const requestSort = (key) => {
         let direction = 'ascending';
-        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-            direction = 'descending';
-        }
+        if (sortConfig.key === key && sortConfig.direction === 'ascending') { direction = 'descending'; }
         setSortConfig({ key, direction });
-
         const directionText = direction.charAt(0).toUpperCase() + direction.slice(1);
         setSortIndicator(`Sorted ${directionText}`);
-        setTimeout(() => {
-            setSortIndicator('');
-        }, 2000);
+        setTimeout(() => setSortIndicator(''), 2000);
     };
 
     const filteredAndSortedTasks = useMemo(() => {
-        let processedTasks = [...tasks].filter(task => {
-            const statusMatch = statusFilter === 'All' || task.status === statusFilter;
-            const searchMatch = searchQuery === '' ||
-                task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                task.assignedTo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                task.deadline.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                task.status.toLowerCase().includes(searchQuery.toLowerCase());
-            return statusMatch && searchMatch;
-        });
-
+        let processedTasks = [...tasks].filter(task => (statusFilter === 'All' || task.status === statusFilter) &&
+            (searchQuery === '' || Object.values(task).some(val => String(val).toLowerCase().includes(searchQuery.toLowerCase())))
+        );
         if (sortConfig.key !== null) {
             processedTasks.sort((a, b) => {
-                if (a[sortConfig.key] < b[sortConfig.key]) {
-                    return sortConfig.direction === 'ascending' ? -1 : 1;
-                }
-                if (a[sortConfig.key] > b[sortConfig.key]) {
-                    return sortConfig.direction === 'ascending' ? 1 : -1;
-                }
+                if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
+                if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
                 return 0;
             });
         }
@@ -83,26 +69,12 @@ const TasksPage = () => {
                 </div>
 
                 <div className="flex-grow bg-white p-6 rounded-lg shadow-md relative">
-                    {sortIndicator && (
-                        <div className="absolute top-6 right-6 bg-slate-800 text-white text-sm font-semibold px-3 py-1 rounded-full shadow-lg transition-opacity duration-300 ease-in-out">{sortIndicator}</div>
-                    )}
-                    
-                    {/* --- KEY CHANGE: Filter and Action controls are now grouped above the table --- */}
+                    {sortIndicator && <div className="absolute top-6 right-6 bg-slate-800 text-white text-sm font-semibold px-3 py-1 rounded-full shadow-lg">{sortIndicator}</div>}
                     <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
                         <h2 className="text-2xl font-bold text-slate-800">Tasks List</h2>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                className="w-48 border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                          
-                            <button onClick={() => setShowModal(true)} className="flex items-center bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600">
-                                <LuPlus className="mr-2" />
-                                Create Task
-                            </button>
+                        <div className="flex items-center gap-2"><input type="text" placeholder="Search..." className="w-48 border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                            <div className="relative"><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="appearance-none border border-slate-300 rounded-lg py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500"><option value="All">All Statuses</option> <option value="Pending">Pending</option> <option value="In Progress">In Progress</option> <option value="Completed">Completed</option></select><LuChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" /></div>
+                            <button onClick={handleOpenCreateModal} className="flex items-center bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600"><LuPlus className="mr-2" /> Create</button>
                         </div>
                     </div>
 
@@ -110,20 +82,15 @@ const TasksPage = () => {
                         <table className="w-full text-left">
                             <thead className="border-b-2 border-slate-200">
                                 <tr>
-                                    {/* --- KEY CHANGE: Status header is now a sortable button --- */}
-                                    <th className="p-3 text-sm font-semibold text-slate-500">
-                                        <button onClick={() => requestSort('status')} className="flex items-center gap-1 hover:text-slate-800">Status <LuArrowUpDown size={14} /></button>
-                                    </th>
-                                    <th className="p-3 text-sm font-semibold text-slate-500">
-                                        <button onClick={() => requestSort('title')} className="flex items-center gap-1 hover:text-slate-800">Task Title <LuArrowUpDown size={14} /></button>
-                                    </th>
-                                    <th className="p-3 text-sm font-semibold text-slate-500">
-                                        <button onClick={() => requestSort('assignedTo')} className="flex items-center gap-1 hover:text-slate-800">Assigned To <LuArrowUpDown size={14} /></button>
-                                    </th>
-                                    <th className="p-3 text-sm font-semibold text-slate-500">
-                                        <button onClick={() => requestSort('deadline')} className="flex items-center gap-1 hover:text-slate-800">Deadline <LuArrowUpDown size={14} /></button>
-                                    </th>
-                                    <th className="p-3 text-sm font-semibold text-slate-500">Actions</th>
+                                    {['Status', 'Task Title', 'Assigned To', 'Department', 'Deadline'].map(header => (
+                                        <th key={header} className="p-1 text-sm font-semibold text-slate-500">
+                                            {/* FIXED: Replaced hover:bg-slate-100 with hover:text-black */}
+                                            <button onClick={() => requestSort(header.toLowerCase().replace(/ /g, ''))} className="flex items-center gap-1 p-2 rounded-md hover:text-black w-full text-left">
+                                                {header} <LuArrowUpDown size={14} />
+                                            </button>
+                                        </th>
+                                    ))}
+                                    <th className="p-3 text-sm font-semibold text-slate-500 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -132,8 +99,11 @@ const TasksPage = () => {
                                         <td className="p-3"><StatusBadge status={task.status} /></td>
                                         <td className="p-3 font-medium text-slate-800">{task.title}</td>
                                         <td className="p-3 text-slate-600">{task.assignedTo}</td>
+                                        <td className="p-3 text-slate-600">{task.department}</td>
                                         <td className="p-3 text-slate-600">{task.deadline}</td>
-                                        <td className="p-3"><button className="text-teal-600 hover:underline font-semibold">Details</button></td>
+                                        <td className="p-3 flex justify-center">
+                                            <ActionMenu onViewDetails={() => handleOpenDetailsModal(task)} onEdit={() => handleOpenEditModal(task)} onDelete={() => handleDeleteTask(task.id)} />
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -141,8 +111,8 @@ const TasksPage = () => {
                     </div>
                 </div>
             </div>
-
-            <CreateTaskModal isVisible={showModal} onClose={() => setShowModal(false)} onAddTask={handleAddTask} />
+            <CreateTaskModal isVisible={isEditModalVisible} onClose={handleCloseAllModals} onAddTask={handleAddTask} taskToEdit={editingTask} onUpdateTask={handleUpdateTask} />
+            <TaskDetailsModal isVisible={isDetailsModalVisible} onClose={handleCloseAllModals} task={viewingTask} />
         </>
     );
 };
