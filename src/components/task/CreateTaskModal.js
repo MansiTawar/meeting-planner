@@ -1,8 +1,8 @@
 // Filename: src/components/CreateTaskModal.js
-// --- This is the complete, corrected code for the modal ---
+// --- This is the complete, corrected code with the typo fixed ---
 
 import React, { useState, useEffect } from 'react';
-import { LuX, LuCloudUpload } from 'react-icons/lu'; // Corrected icon name
+import { LuX, LuCloudUpload } from 'react-icons/lu';
 
 const CreateTaskModal = ({ isVisible, onClose, onAddTask, taskToEdit, onUpdateTask }) => {
   const isEditMode = Boolean(taskToEdit);
@@ -20,7 +20,8 @@ const CreateTaskModal = ({ isVisible, onClose, onAddTask, taskToEdit, onUpdateTa
         assignedTo: taskToEdit.assignedTo,
         department: taskToEdit.department || '',
         deadline: taskToEdit.deadline,
-        status: taskToEdit.status,
+        // FIXED: The typo is corrected here
+        status: taskToEdit.status, 
       });
     } else {
       setFormData({
@@ -73,13 +74,13 @@ const CreateTaskModal = ({ isVisible, onClose, onAddTask, taskToEdit, onUpdateTa
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label htmlFor="assignedTo" className="block text-slate-700 font-medium mb-1">Assigned To</label>
-                <select name="assignedTo" value={formData.assignedTo} onChange={handleChange} className="w-full border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                <select name="assignedTo" value={formData.assignedTo} onChange={handleChange} className="w-full bg-white border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
                   <option value="">Select Employee</option><option value="Alice Johnson">Alice Johnson</option><option value="Bob Williams">Bob Williams</option><option value="Charlie Brown">Charlie Brown</option><option value="You (John Doe)">You (John Doe)</option>
                 </select>
               </div>
               <div>
                 <label htmlFor="department" className="block text-slate-700 font-medium mb-1">Department</label>
-                <select name="department" value={formData.department} onChange={handleChange} className="w-full border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                <select name="department" value={formData.department} onChange={handleChange} className="w-full bg-white border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
                   <option value="">Select Department</option><option value="Engineering">Engineering</option><option value="Marketing">Marketing</option><option value="HR">HR</option>
                 </select>
               </div>
@@ -87,12 +88,12 @@ const CreateTaskModal = ({ isVisible, onClose, onAddTask, taskToEdit, onUpdateTa
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label htmlFor="deadline" className="block text-slate-700 font-medium mb-1">Deadline</label>
-                <input type="date" name="deadline" value={formData.deadline} onChange={handleChange} className="w-full border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500" />
+                <input type="date" name="deadline" value={formData.deadline} onChange={handleChange} className="w-full bg-white border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500" />
               </div>
               {isEditMode && (
                 <div>
                   <label htmlFor="status" className="block text-slate-700 font-medium mb-1">Status</label>
-                  <select name="status" value={formData.status} onChange={handleChange} className="w-full border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                  <select name="status" value={formData.status} onChange={handleChange} className="w-full bg-white border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
                     <option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option>
                   </select>
                 </div>

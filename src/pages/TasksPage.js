@@ -3,7 +3,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { LuPlus, LuArrowUpDown } from "react-icons/lu"; // Added LuChevronDown
-import CreateTaskModal from './CreateTaskModal';
+import CreateTaskModal from '../components/task/CreateTaskModal';
 
 const initialTasks = [
     { id: 1, title: 'Draft initial project proposal', assignedTo: 'Alice Johnson', deadline: '2025-08-15', status: 'Completed' },
