@@ -1,11 +1,8 @@
-// Filename: src/components/include/SideNavbar.js
-// --- THIS IS THE CORRECTED CODE ---
-
 import React from 'react';
 // NEW: Import NavLink for proper routing
 import { NavLink } from 'react-router-dom';
 // CHANGED: Replaced LuBarChart3 with the correct LuChartBar
-import { LuLayoutDashboard, LuCalendarClock, LuListTodo, LuChartBar } from "react-icons/lu";
+import { LuLayoutDashboard, LuCalendarClock, LuListTodo, LuChartBar, LuCalendarDays  } from "react-icons/lu";
 
 const SideNavbar = () => {
   // This function determines the class for the NavLink based on if it's active
