@@ -73,8 +73,7 @@ const TasksPage = () => {
                     <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
                         <h2 className="text-2xl font-bold text-slate-800">Tasks List</h2>
                         <div className="flex items-center gap-2"><input type="text" placeholder="Search..." className="w-48 border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                            <div className="relative"><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="appearance-none border border-slate-300 rounded-lg py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500"><option value="All">All Statuses</option> <option value="Pending">Pending</option> <option value="In Progress">In Progress</option> <option value="Completed">Completed</option></select><LuChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" /></div>
-                            <button onClick={handleOpenCreateModal} className="flex items-center bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600"><LuPlus className="mr-2" /> Create</button>
+                            <button onClick={handleOpenCreateModal} className="flex items-center bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600"><LuPlus className="mr-2" /> New Task</button>
                         </div>
                     </div>
 

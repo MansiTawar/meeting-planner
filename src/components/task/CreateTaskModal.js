@@ -52,9 +52,12 @@ const CreateTaskModal = ({ isVisible, onClose, onAddTask, taskToEdit, onUpdateTa
   return (
     // --- MODIFIED: The backdrop-blur class is now conditional ---
     <div className={`fixed inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50 transition-all duration-300 ${!isElementFocused ? 'backdrop-blur-sm' : ''}`}>
-      <div className="w-[600px] flex flex-col"><button className="text-white text-xl place-self-end" onClick={onClose}><LuX size={30} /></button>
+      <div className="w-[600px] flex flex-col">
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold text-slate-800 mb-4">{isEditMode ? 'Edit Task' : 'Create New Task'}</h2>
+          <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-slate-800">Create New Task</h2>
+                    <button onClick={onClose} className="text-slate-500 hover:text-slate-800"><LuX size={24} /></button>
+                  </div>
           <form onSubmit={handleSubmit}>
             <div className="mb-4"><label htmlFor="title" className="block text-slate-700 font-medium mb-1">Task Title</label><input type="text" name="title" value={formData.title} onChange={handleChange} className="w-full border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500" /></div>
             <div className="mb-4"><label htmlFor="description" className="block text-slate-700 font-medium mb-1">Task Description</label><textarea name="description" value={formData.description} onChange={handleChange} rows="3" className="w-full border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea></div>
@@ -87,7 +90,9 @@ const CreateTaskModal = ({ isVisible, onClose, onAddTask, taskToEdit, onUpdateTa
               )}
             </div>
             <div className="mb-4"><label className="block text-slate-700 font-medium mb-1">Attach File (Optional)</label><label htmlFor="file-upload" className="w-full flex items-center justify-center p-4 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50"><LuCloudUpload className="w-6 h-6 text-slate-500 mr-3" /><span className="text-slate-600">{fileName || 'Click to upload a file'}</span></label><input id="file-upload" name="file-upload" type="file" className="hidden" onChange={handleFileChange} /></div>
-            <div className="flex justify-end gap-4 mt-6"><button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100">Cancel</button><button type="submit" className="px-4 py-2 rounded-lg bg-teal-500 text-white font-semibold hover:bg-teal-600">{isEditMode ? 'Save Changes' : 'Create Task'}</button></div>
+            <div className="flex justify-end gap-4 mt-6">
+              <button type="button" onClick={onClose} className="py-2 px-4 rounded-lg bg-slate-100 text-slate-800 font-semibold hover:bg-slate-200">Cancel</button>
+              <button type="submit" className="px-4 py-2 rounded-lg bg-teal-500 text-white font-semibold hover:bg-teal-600">{isEditMode ? 'Save Changes' : 'Create Task'}</button></div>
           </form>
         </div>
       </div>
