@@ -14,6 +14,7 @@ import MainLayout from './components/include/MainLayout';
 // TasksPage is now imported from the 'pages' folder.
 import TasksPage from './pages/TasksPage'; 
 import MeetingsPage from './pages/MeetingsPage'; // Import the new page
+import Dashboard from "./pages/Dashboard";
 
 
 import './App.css'; 
@@ -37,7 +38,7 @@ function App() {
           {/* The route for your newly organized TasksPage */}
           <Route path="tasks" element={<TasksPage />} />
           <Route path="meetings" element={<MeetingsPage />} /> {/* <-- ADD THE NEW ROUTE */}
-
+          <Route path="/dashboard" element={<Dashboard />} />
 
           {/* 
             When your teammate is ready, they can add the MeetingPage route here.
